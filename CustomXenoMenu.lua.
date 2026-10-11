@@ -1,0 +1,136 @@
+-- Custom Xeno Menu
+-- For your own Roblox Studio experience
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local oldGui = playerGui:FindFirstChild("CustomXenoMenu")
+if oldGui then
+    oldGui:Destroy()
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "CustomXenoMenu"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(300, 300)
+main.Position = UDim2.new(0.5, -150, 0.5, -150)
+main.BackgroundColor3 = Color3.fromRGB(20, 18, 30)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+main.Parent = gui
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+
+local outline = Instance.new("UIStroke")
+outline.Color = Color3.fromRGB(155, 80, 255)
+outline.Thickness = 2
+outline.Parent = main
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.BackgroundColor3 = Color3.fromRGB(105, 50, 190)
+title.Text = "XENO  |  CUSTOM MENU"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = main
+
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 10)
+
+local list = Instance.new("Frame")
+list.Position = UDim2.fromOffset(10, 55)
+list.Size = UDim2.new(1, -20, 1, -65)
+list.BackgroundTransparency = 1
+list.Parent = main
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 8)
+layout.Parent = list
+
+local function makeButton(text, callback)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, 0, 0, 38)
+    b.BackgroundColor3 = Color3.fromRGB(45, 38, 62)
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Font = Enum.Font.Gotham
+    b.TextSize = 14
+    b.Text = text
+    b.Parent = list
+
+    Instance.new("UICorner", b).CornerRadius =
+        UDim.new(0, 7)
+
+    b.Activated:Connect(callback)
+    return b
+end
+
+local walkSpeed = 16
+local flying = false
+local invisible = false
+
+makeButton("WalkSpeed +", function()
+    walkSpeed = math.min(walkSpeed + 4, 100)
+
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        hum.WalkSpeed = walkSpeed
+    end
+end)
+
+makeButton("WalkSpeed -", function()
+    walkSpeed = math.max(walkSpeed - 4, 16)
+
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        hum.WalkSpeed = walkSpeed
+    end
+end)
+
+local flyButton
+flyButton = makeButton("Fly: OFF", function()
+    flying = not flying
+    flyButton.Text = flying and "Fly: ON" or "Fly: OFF"
+    -- Add authorized flight movement for your own game here.
+end)
+
+local invisibleButton
+invisibleButton = makeButton("Invisible: OFF", function()
+    invisible = not invisible
+    invisibleButton.Text = invisible
+        and "Invisible: ON"
+        or "Invisible: OFF"
+    -- Add character visibility logic for your own game here.
+end)
+
+makeButton("Reset Speed", function()
+    walkSpeed = 16
+
+    local char = player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        hum.WalkSpeed = 16
+    end
+end)
+
+UIS.InputBegan:Connect(function(input, processed)
+    if processed then return end
+
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        main.Visible = not main.Visible
+    end
+end)
+
+print("Custom Xeno Menu loaded!")
